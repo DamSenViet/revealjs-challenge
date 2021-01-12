@@ -38,19 +38,19 @@
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
+      <TabbedContent/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import TabbedContent from './components/TabbedContent';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    TabbedContent,
   },
 
   data: () => ({

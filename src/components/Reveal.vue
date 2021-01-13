@@ -11,7 +11,7 @@ import Reveal from "reveal.js";
 
 export default {
   name: "Reveal",
-
+  
   data() {
     return {
       deck: null,
@@ -21,20 +21,18 @@ export default {
   async mounted() {
     this.deck = new Reveal(this.$el, {
       embedded: true,
-      // disableLayout: true,
-      // disable esc and f
       keyboard: {
         27: null,
         70: null,
-      }
-    });
+        },
+      });
     await this.deck.initialize();
-    await this.$nextTick();
-    this.deck.layout();
+    await this.layout();
   },
   
   methods: {
-    layout() {
+    async layout() {
+    await this.$nextTick();
       this.deck.layout();
     }
   }

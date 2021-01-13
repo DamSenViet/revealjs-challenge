@@ -97,14 +97,12 @@ export default {
   methods: {
     async onExpand() {
       this.isExpanded = !this.isExpanded;
-      await this.$nextTick();
-      this.$refs.reveal.layout();
+      await this.$refs.reveal.layout();
     },
     async onKeyDown(event) {
       if (event.keyCode == 27) this.isExpanded = false;
       else if (event.keyCode == 70) this.isExpanded = true;
-      await this.$nextTick();
-      this.$refs.reveal.layout();
+      await this.$refs.reveal.layout();
     },
   },
 };

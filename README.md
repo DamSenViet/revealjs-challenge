@@ -1,5 +1,7 @@
 # revealjs-challenge
 
+[Demo Link](https://damsenviet.github.io/revealjs-challenge/)
+
 ## Project setup
 ```
 npm install

@@ -17,6 +17,7 @@ export default {
     const el = ref(null);
     const deck = ref(null);
     
+    // update layout
     const layout = async () => {
       await root.$nextTick();
       deck.value.layout();
@@ -24,6 +25,8 @@ export default {
     
     onMounted(async () => {
       deck.value = new Reveal(el.value, {
+        // manually control layout
+        // disableLayout: true,
         embedded: true,
         keyboard: {
           27: null,

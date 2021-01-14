@@ -22,7 +22,7 @@
                 class="close-button"
                 elevation="0"
                 v-if="state.isExpanded"
-                @click="onExpand"
+                @click="state.isExpanded = false"
               >
                 <v-icon>mdi-fullscreen-exit</v-icon>
               </v-btn>
@@ -59,7 +59,7 @@
             <v-expansion-panel-content>
               <div class="d-flex justify-space-between align-center">
                 <span>Presentation</span>
-                <v-btn elevation="0" @click="onExpand"
+                <v-btn elevation="0" @click="state.isExpanded = true"
                   ><v-icon>mdi-motion-play-outline</v-icon></v-btn
                 >
               </div>
@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { reactive, onMounted, onUnmounted } from "@vue/composition-api";
+import { reactive, watch, onMounted, onUnmounted } from "@vue/composition-api";
 import Reveal from "./Reveal";
 import GDPChart from "./GDPChart";
 import StackedBarChart from "./StackedBarChart";
@@ -92,16 +92,14 @@ export default {
       tab: null,
       items: ["Tab One", "Tab Two"],
     });
+    
+    watch(() => state.isExpanded, async (newIsExpanded, oldIsExpanded) => {
+      await context.refs.reveal.layout();
+    });
 
     const onKeyDown = async () => {
       if (event.keyCode == 27) state.isExpanded = false;
       else if (event.keyCode == 70) state.isExpanded = true;
-      await context.refs.reveal.layout();
-    };
-
-    const onExpand = async () => {
-      state.isExpanded = !state.isExpanded;
-      await context.refs.reveal.layout();
     };
 
     onMounted(async () => {
@@ -113,7 +111,6 @@ export default {
 
     return {
       state,
-      onExpand,
     };
   },
 };
@@ -140,10 +137,11 @@ export default {
 
   &.expanded {
     height: 700px;
-    & .chart {
+    // manually control layout
+    // & .chart {
       // height: 600px;
       // width: 600px;
-    }
+    // }
   }
 }
 

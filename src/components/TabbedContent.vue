@@ -1,22 +1,29 @@
 <template>
   <v-container>
-    <v-row :class="{
-      'page-row': true,
-      'expanded': isExpanded,
-      }">
+    <v-row
+      :class="{
+        'page-row': true,
+        expanded: state.isExpanded,
+      }"
+    >
       <section>
-        <v-tabs v-model="tab">
-          <v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
+        <v-tabs v-model="state.tab">
+          <v-tab v-for="item in state.items" :key="item">{{ item }}</v-tab>
 
           <!-- <v-btn @click="onExpand" elevation="0" class="expand-button">
             <v-icon>mdi-arrow-expand</v-icon>
           </v-btn> -->
         </v-tabs>
 
-        <v-tabs-items v-model="tab">
+        <v-tabs-items v-model="state.tab">
           <v-tab-item>
             <v-card flat>
-              <v-btn class="close-button" elevation="0" v-if="isExpanded" @click="onExpand">
+              <v-btn
+                class="close-button"
+                elevation="0"
+                v-if="state.isExpanded"
+                @click="onExpand"
+              >
                 <v-icon>mdi-fullscreen-exit</v-icon>
               </v-btn>
 
@@ -24,7 +31,7 @@
                 ref="reveal"
                 :class="{
                   presentation: true,
-                  expanded: isExpanded,
+                  expanded: state.isExpanded,
                 }"
               >
                 <section>
@@ -45,16 +52,16 @@
         </v-tabs-items>
       </section>
 
-      <section v-if="!isExpanded">
+      <section v-if="!state.isExpanded">
         <v-expansion-panels accordion>
           <v-expansion-panel>
-            <v-expansion-panel-header>
-              Storyboard
-            </v-expansion-panel-header>
+            <v-expansion-panel-header> Storyboard </v-expansion-panel-header>
             <v-expansion-panel-content>
               <div class="d-flex justify-space-between align-center">
                 <span>Presentation</span>
-                <v-btn elevation="0" @click="onExpand"><v-icon>mdi-motion-play-outline</v-icon></v-btn>
+                <v-btn elevation="0" @click="onExpand"
+                  ><v-icon>mdi-motion-play-outline</v-icon></v-btn
+                >
               </div>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -65,6 +72,7 @@
 </template>
 
 <script>
+import { reactive, onMounted, onUnmounted } from "@vue/composition-api";
 import Reveal from "./Reveal";
 import GDPChart from "./GDPChart";
 import StackedBarChart from "./StackedBarChart";
@@ -78,32 +86,35 @@ export default {
     StackedBarChart,
   },
 
-  data() {
-    return {
+  setup(props, context) {
+    const state = reactive({
       isExpanded: false,
       tab: null,
       items: ["Tab One", "Tab Two"],
+    });
+
+    const onKeyDown = async () => {
+      if (event.keyCode == 27) state.isExpanded = false;
+      else if (event.keyCode == 70) state.isExpanded = true;
+      await context.refs.reveal.layout();
     };
-  },
 
-  mounted() {
-    window.document.addEventListener("keydown", this.onKeyDown);
-  },
+    const onExpand = async () => {
+      state.isExpanded = !state.isExpanded;
+      await context.refs.reveal.layout();
+    };
 
-  destroyed() {
-    window.document.removeEventListener("keydown", this.onKeyDown);
-  },
+    onMounted(async () => {
+      window.document.addEventListener("keydown", onKeyDown);
+    });
+    onUnmounted(async () => {
+      window.document.removeEventListener("keydown", onKeyDown);
+    });
 
-  methods: {
-    async onExpand() {
-      this.isExpanded = !this.isExpanded;
-      await this.$refs.reveal.layout();
-    },
-    async onKeyDown(event) {
-      if (event.keyCode == 27) this.isExpanded = false;
-      else if (event.keyCode == 70) this.isExpanded = true;
-      await this.$refs.reveal.layout();
-    },
+    return {
+      state,
+      onExpand,
+    };
   },
 };
 </script>

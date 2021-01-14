@@ -1,40 +1,43 @@
 <template>
-  <div class="reveal">
+  <div class="reveal" ref="el">
     <div class="slides">
-      <slot> </slot>
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, reactive, onMounted } from "@vue/composition-api";
 import Reveal from "reveal.js";
 
 export default {
   name: "Reveal",
   
-  data() {
-    return {
-      deck: null,
+  setup(props, { root }) {
+    const el = ref(null);
+    const deck = ref(null);
+    
+    const layout = async () => {
+      await root.$nextTick();
+      deck.value.layout();
     };
-  },
-
-  async mounted() {
-    this.deck = new Reveal(this.$el, {
-      embedded: true,
-      keyboard: {
-        27: null,
-        70: null,
-        },
+    
+    onMounted(async () => {
+      deck.value = new Reveal(el.value, {
+        embedded: true,
+        keyboard: {
+          27: null,
+          70: null,
+        }
       });
-    await this.deck.initialize();
-    await this.layout();
-  },
-  
-  methods: {
-    async layout() {
-    await this.$nextTick();
-      this.deck.layout();
-    }
+      await deck.value.initialize();
+    });
+    
+    
+    return {
+      el,
+      layout,
+    };
   }
 };
 </script>
